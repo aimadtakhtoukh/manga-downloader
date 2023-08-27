@@ -1,0 +1,51 @@
+version: '3'
+volumes:
+  kaizoku:
+    driver: local
+    driver_opts:
+      type: none
+      device: "C:\\Users\\golde\\IdeaProjects\\manga-downloader-volumes\\kaizoku"
+      o: bind
+services:
+  app:
+    container_name: kaizoku
+    image: ghcr.io/oae/kaizoku:latest
+    environment:
+      - DATABASE_URL=postgresql://kaizoku:kaizoku@db:5432/kaizoku
+      - KAIZOKU_PORT=3000
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/Istanbul
+    volumes:
+#      - /home/aimad/projects/kaizoku/data:/data
+#      - /home/aimad/projects/kaizoku/config:/config
+#      - /home/aimad/projects/kaizoku/logs:/logs
+#      - /media/storage/system/kaizoku_tmp:/tmp
+      - kaizoku:/mangas
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - '3000:3000'
+    restart: unless-stopped
+  redis:
+    image: redis:7-alpine
+#    volumes:
+#      - redis:/data
+    restart: unless-stopped
+  db:
+    image: postgres:alpine
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U kaizoku']
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    environment:
+      - POSTGRES_USER=kaizoku
+      - POSTGRES_DB=kaizoku
+      - POSTGRES_PASSWORD=kaizoku
+#    volumes:
+#      - db:/var/lib/postgresql/data
+    restart: unless-stopped

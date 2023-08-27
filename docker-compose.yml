@@ -1,0 +1,46 @@
+version : '3.8'
+volumes:
+  tachidesk-config:
+    driver: local
+    driver_opts:
+      type: none
+      device: "C:\\Users\\golde\\IdeaProjects\\manga-downloader-volumes\\config"
+      o: bind
+  komga-config:
+    driver: local
+    driver_opts:
+      type: none
+      device: "C:\\Users\\golde\\IdeaProjects\\manga-downloader-volumes\\komga-config"
+      o: bind
+  mangas:
+    driver: local
+    driver_opts:
+      type: none
+      device: "C:\\Users\\golde\\IdeaProjects\\manga-downloader-volumes\\mangas"
+      o: bind
+services:
+  tachidesk:
+    image: ghcr.io/suwayomi/tachidesk
+    container_name: tachidesk
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/London
+      - LOGGING=file
+    volumes:
+      - tachidesk-config:/home/suwayomi/.local/share/Tachidesk
+    ports:
+      - "4567:4567"
+    restart: unless-stopped
+  komga:
+    image: gotson/komga
+    container_name: komga
+    volumes:
+      - komga-config:/config
+      - mangas:/mangas
+    ports:
+      - "25600:25600"
+    environment:
+      - PUID=1000
+      - PGID=1000
+    restart: unless-stopped
