@@ -7,25 +7,25 @@ networks:
     driver: bridge
     
 volumes:
-  tachidesk-config:
+  tachidesk_config:
     driver_opts:
       type: none
-      device: /home/aimad/projects/downloader/tachidesk/config
+      device: /home/aimad/projects/manga-downloader/tachidesk/config
       o: bind
   tachidesk_downloads:
     driver_opts:
       type: none
       device: /media/storage/system/tachidesk_downloads
       o: bind
-  komga-config:
+  komga_config:
     driver_opts:
       type: none
-      device: /home/aimad/projects/komga/config
+      device: /home/aimad/projects/manga-downloader/komga/config
       o: bind
-  kavita-config:
+  kavita_config:
     driver_opts:
       type: none
-      device: /home/aimad/projects/kavita/config
+      device: /home/aimad/projects/manga-downloader/kavita/config
       o: bind
   
   mangas:
@@ -47,7 +47,8 @@ services:
       - TZ=Europe/London
       - LOGGING=file
     volumes:
-      - tachidesk-config:/home/suwayomi/.local/share/Tachidesk
+      - tachidesk_config:/home/suwayomi/.local/share/Tachidesk
+      - tachidesk_downloads:/home/suwayomi/.local/share/Tachidesk/downloads
     ports:
       - "4567:4567"
     restart: unless-stopped
@@ -58,7 +59,7 @@ services:
     networks:
       - web
     volumes:
-      - komga-config:/config
+      - komga_config:/config
       - mangas:/mangas
     ports:
       - "25600:25600"
@@ -75,7 +76,7 @@ services:
     volumes:
       - /etc/timezone:/etc/timezone:ro
       - mangas:/mangas
-      - kavita-config:/kavita/config
+      - kavita_config:/kavita/config
     ports:
       - 5000:5000
     environment:
@@ -88,7 +89,10 @@ services:
     container_name: manga-downloader
     volumes:
       - mangas:/mangas
-      - tachidesk-config:/tachidesk
+      - tachidesk_downloads:/tachidesk
+    user: "1000:1000"
+    networks:
+      - internal
     environment:
       - "TACHIDESK_URL=http://tachidesk:4567"
       - "SOURCE_PATH=/tachidesk/downloads"
