@@ -1,46 +1,27 @@
 version : '3.8'
-networks:
-  web:
-    name: web
-    external: true
-  internal:
-    driver: bridge
-    
 volumes:
   tachidesk-config:
+    driver: local
     driver_opts:
       type: none
-      device: /home/aimad/projects/downloader/tachidesk/config
-      o: bind
-  tachidesk_downloads:
-    driver_opts:
-      type: none
-      device: /media/storage/system/tachidesk_downloads
+      device: "C:\\Users\\golde\\IdeaProjects\\manga-downloader-volumes\\config"
       o: bind
   komga-config:
+    driver: local
     driver_opts:
       type: none
-      device: /home/aimad/projects/komga/config
+      device: "C:\\Users\\golde\\IdeaProjects\\manga-downloader-volumes\\komga-config"
       o: bind
-  kavita-config:
-    driver_opts:
-      type: none
-      device: /home/aimad/projects/kavita/config
-      o: bind
-  
   mangas:
+    driver: local
     driver_opts:
       type: none
-      device: /media/storage/Medias/Mangas
+      device: "C:\\Users\\golde\\IdeaProjects\\manga-downloader-volumes\\mangas"
       o: bind
-
 services:
   tachidesk:
     image: ghcr.io/suwayomi/tachidesk
     container_name: tachidesk
-    networks:
-      - web
-      - internal
     environment:
       - PUID=1000
       - PGID=1000
@@ -51,12 +32,9 @@ services:
     ports:
       - "4567:4567"
     restart: unless-stopped
-
   komga:
     image: gotson/komga
     container_name: komga
-    networks:
-      - web
     volumes:
       - komga-config:/config
       - mangas:/mangas
@@ -66,23 +44,6 @@ services:
       - PUID=1000
       - PGID=1000
     restart: unless-stopped
-  
-  kavita:
-    image: kizaing/kavita
-    container_name: kavita
-    networks:
-      - web
-    volumes:
-      - /etc/timezone:/etc/timezone:ro
-      - mangas:/mangas
-      - kavita-config:/kavita/config
-    ports:
-      - 5000:5000
-    environment:
-      - PUID=1000
-      - PGID=1000
-    restart: unless-stopped
-    
   downloader:
     image: manga-downloader:0.1.0-SNAPSHOT
     container_name: manga-downloader
