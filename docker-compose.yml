@@ -90,7 +90,6 @@ services:
     volumes:
       - mangas:/mangas
       - tachidesk_downloads:/tachidesk
-    user: "1000:1000"
     networks:
       - internal
     environment:
