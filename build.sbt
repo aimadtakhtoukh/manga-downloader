@@ -1,3 +1,6 @@
+enablePlugins(JavaAppPackaging)
+enablePlugins(DockerPlugin)
+
 lazy val root = project
   .in(file("."))
   .settings(
@@ -11,14 +14,8 @@ lazy val root = project
       "dev.zio" %% "zio" % "2.0.16",
       "dev.zio" %% "zio-http" % "3.0.0-RC2",
 
-      "dev.zio" %% "zio-config" % "3.0.7",
-      "dev.zio" %% "zio-config-magnolia" % "3.0.7",
-      "dev.zio" %% "zio-config-typesafe" % "3.0.7",
-      "dev.zio" %% "zio-config-refined" % "3.0.7",
-
       //Streams
-      "dev.zio" %% "zio-core" % "2.0.16" % Test,
-      "dev.zio" %% "zio-streams" % "2.0.16" % Test,
+      "dev.zio" %% "zio-streams" % "2.0.16",
 
       // Gestion des ZIP
       "dev.zio" %% "zio-nio" % "2.0.1",
@@ -30,3 +27,5 @@ lazy val root = project
       "org.codehaus.woodstox" % "woodstox-core-asl" % "4.4.1"
     )
   )
+
+dockerEntrypoint := Seq("/opt/docker/bin/download-library")
