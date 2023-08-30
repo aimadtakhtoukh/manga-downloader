@@ -10,8 +10,7 @@ case class Chapter(
                     pageCount: Int,
                     chapterCount: Int,
                     index: Int,
-                    downloaded: Boolean,
-                    uploadDate: Int
+                    downloaded: Boolean
                   )
 
 object Chapter {
