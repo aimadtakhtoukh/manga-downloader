@@ -12,19 +12,28 @@ object MylarJson {
 }
 
 case class Metadata(
-                   `type`: String,
-                   name: String,
-                   description_formatted: String,
-                   description_text: String,
-                   status: String,
-                   ComicImage: String,
-                   publisher: String,
-                   comicId: Long,
-                   booktype: String
+                     `type`: String,
+                     name: String,
+                     description_formatted: String,
+                     description_text: String,
+                     status: String,
+                     ComicImage: String,
+                     publisher: String,
+                     comicid: Long,
+                     year: Int,
+                     total_issues: Int,
+                     booktype: String,
+                     publication_run : String
                    )
 
 object Metadata {
   implicit val encoder: JsonEncoder[Metadata] = DeriveJsonEncoder.gen[Metadata]
+
+  private def mapStatus(status: String): String =
+    status match {
+      case "ONGOING" => "Continuing"
+      case "FINISHED" => "Ended"
+    }
 
   def apply(mangaEntry: MangaEntry): ZIO[Any, Throwable, Metadata] =
     for {
@@ -35,11 +44,14 @@ object Metadata {
           name = mangaEntry.title,
           description_formatted = mangaEntry.description,
           description_text = mangaEntry.description,
-          status = mangaEntry.status,
-          ComicImage = s"$u${mangaEntry.thumbnailUrl}",
+          status = mapStatus(mangaEntry.status),
+          ComicImage = s"https://tachidesk.roleplay.ovh${mangaEntry.thumbnailUrl}",
           publisher = mangaEntry.author.getOrElse(""),
-          comicId = mangaEntry.id,
-          booktype = "Print"
+          comicid = 0,
+          year = 0,
+          total_issues = 0,
+          booktype = "Print",
+          publication_run = ""
         )
       )
     } yield metadata

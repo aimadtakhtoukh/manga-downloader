@@ -43,7 +43,7 @@ object DownloadLibrary extends ZIOAppDefault :
       } yield ()
     ).orElseSucceed(())
 
-  private def downloadThumbnail(entry: MangaEntry) =
+  private def downloadPoster(entry: MangaEntry) =
     for {
       u <- url
       result <- Client.request(s"$u${entry.thumbnailUrl}")
@@ -51,10 +51,10 @@ object DownloadLibrary extends ZIOAppDefault :
       mediaType <- ZIO.succeed(contentType.mediaType).map(_.subType)
       mangaFolder <- destinationPath.map(_ / clean(entry.title))
       _ <- Files.createDirectories(mangaFolder).orDie
-      thumbnailName <- ZIO.succeed(s"thumbnail.$mediaType")
+      posterName <- ZIO.succeed(s"poster.$mediaType")
       body <- ZIO.succeed(result.body.asStream)
-      sink <- ZIO.succeed(ZSink.fromFile((mangaFolder / thumbnailName).toFile))
-      _ <- body.run(sink)
+      posterSink <- ZIO.succeed(ZSink.fromFile((mangaFolder / posterName).toFile))
+      _ <- body.run(posterSink)
     } yield ()
 
   private def setUpMylarJson(entry: MangaEntry) =
@@ -75,7 +75,7 @@ object DownloadLibrary extends ZIOAppDefault :
       // Mylar json
       _ <- setUpMylarJson(entry)
       // Thumbnail
-      _ <- downloadThumbnail(entry)
+      _ <- downloadPoster(entry)
       // Update chapter list
       _ <- TachideskApi.updateChapterList(entry.id)
       // Download chapters if not already downloaded
