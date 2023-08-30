@@ -22,12 +22,6 @@ volumes:
       type: none
       device: /home/aimad/projects/manga-downloader/komga/config
       o: bind
-  kavita_config:
-    driver_opts:
-      type: none
-      device: /home/aimad/projects/manga-downloader/kavita/config
-      o: bind
-  
   mangas:
     driver_opts:
       type: none
@@ -66,34 +60,19 @@ services:
     environment:
       - PUID=1000
       - PGID=1000
+      - KOMGA_LIBRARIES_SCAN_CRON=0 */15 * * * ?
     restart: unless-stopped
-  
-  kavita:
-    image: kizaing/kavita
-    container_name: kavita
-    networks:
-      - web
-    volumes:
-      - /etc/timezone:/etc/timezone:ro
-      - mangas:/mangas
-      - kavita_config:/kavita/config
-    ports:
-      - 5000:5000
-    environment:
-      - PUID=1000
-      - PGID=1000
-    restart: unless-stopped
-    
+
   downloader:
     image: manga-downloader:0.1.0-SNAPSHOT
     container_name: manga-downloader
     volumes:
       - mangas:/mangas
-      - tachidesk_downloads:/tachidesk
+      - tachidesk_downloads:/downloads
     networks:
       - internal
     environment:
       - "TACHIDESK_URL=http://tachidesk:4567"
-      - "SOURCE_PATH=/tachidesk/downloads"
+      - "SOURCE_PATH=/downloads"
       - "DESTINATION_PATH=/mangas"
     restart: unless-stopped
