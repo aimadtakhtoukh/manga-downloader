@@ -29,6 +29,7 @@ lazy val root = project
   )
 
 dockerEntrypoint := Seq("/opt/docker/bin/download-library")
+dockerBaseImage := "mangal-java"
 Docker / daemonUserUid := None
 Docker / daemonUser := "root"
 Docker / daemonGroup := "root"
