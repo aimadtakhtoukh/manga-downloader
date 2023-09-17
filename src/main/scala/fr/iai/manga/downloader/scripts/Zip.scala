@@ -7,6 +7,7 @@ import zio.nio.file.*
 object Zip extends ZIOAppDefault :
   private val source: String = "Asura Scans (EN)"
   val manga: String = "The Greatest Estate Developer"
+  val scanlator: Option[String] = None
   val chapter: String = "Chapter 104.5"
 
   def clean(fileName: String) = fileName.replaceAll(":", "_")
@@ -21,8 +22,12 @@ object Zip extends ZIOAppDefault :
     case None => ZIO.fail(IllegalStateException("Destination Path undefined"))
   })
 
-  private def mangaImageSource(source: String)(manga: String)(chapter: String): IO[Throwable, Path] =
-    sourcePath.map(_ / source / manga / chapter)
+  private def mangaImageSource(source: String)(manga: String)(scanlatorOption: Option[String], chapter: String): IO[Throwable, Path] =
+    scanlatorOption match {
+      case Some(scanlator) => sourcePath.map(_ / source / manga / s"${scanlator}_$chapter")
+      case None => sourcePath.map(_ / source / manga / chapter)
+    }
+
 
   private def mangaZipDestination(manga: String)(chapter: String): IO[Throwable, Path] =
     for {
@@ -39,11 +44,11 @@ object Zip extends ZIOAppDefault :
       exists <- Files.exists(destinationFile)
     } yield exists
 
-  def zipManga(source: String, manga: String, chapter: String): IO[Throwable, Unit] =
+  def zipManga(source: String, manga: String, scanlator: Option[String], chapter: String): IO[Throwable, Unit] =
     for {
       cleanedManga <- ZIO.succeed(clean(manga))
       cleanedChapter <- ZIO.succeed(clean(chapter))
-      mangaFolder <- mangaImageSource(source)(cleanedManga)(cleanedChapter).map(_.toFile)
+      mangaFolder <- mangaImageSource(source)(cleanedManga)(scanlator, cleanedChapter).map(_.toFile)
       destinationFile <- mangaZipDestination(cleanedManga)(cleanedChapter).map(_.toFile)
       _ <- ZIO.succeed(ZipUtil.pack(mangaFolder, destinationFile))
     } yield ()
@@ -56,7 +61,7 @@ object Zip extends ZIOAppDefault :
       _ <- ZIO.succeed(ZipUtil.addEntry(baseFile, "ComicInfo.xml", comicInfo.getBytes()))
     } yield ()
 
-  private val program: ZIO[Any, Throwable, Unit] = zipManga(source, manga, chapter)
+  private val program: ZIO[Any, Throwable, Unit] = zipManga(source, manga, scanlator, chapter)
   override val run: ZIO[Any, Throwable, Unit] = program
 
 

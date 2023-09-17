@@ -12,8 +12,9 @@ import zio.nio.file.Files
 import zio.stream.ZSink
 
 object DownloadLibrary extends ZIOAppDefault :
-  private def ifDownloaded(mangaEntry: MangaEntry, chapter: Chapter) =
+  private def ifDownloaded(mangaEntry: MangaEntry, chapter: Chapter): ZIO[Client, Throwable, Boolean] =
     isDownloaded(mangaEntry.id, chapter.index) repeat (Schedule.spaced(1.second) && Schedule.recurUntilEquals(true))
+      .map { case (_, downloaded) => downloaded }
 
   private def handleChapter(entry: MangaEntry, chapter: Chapter): URIO[Client, Unit] =
     (
@@ -30,12 +31,12 @@ object DownloadLibrary extends ZIOAppDefault :
           }
         // Trigger download
         api <- apiUrl
-        downloadUrl <- ZIO.succeed(s"$api/download/${entry.id}/chapter/${chapter.index}")
+        downloadUrl = s"$api/download/${entry.id}/chapter/${chapter.index}"
         _ <- Client.request(downloadUrl)
-        downloaded <- ifDownloaded(entry, chapter).map { case (_, downloaded) => downloaded }
+        downloaded <- ifDownloaded(entry, chapter)
         // Zip manga
         source <- TachideskApi.source(entry.sourceId)
-        _ <- ZIO.succeed(downloaded) *> zipManga(source.displayName, entry.title, chapter.name)
+        _ <- ZIO.succeed(downloaded) *> zipManga(source.displayName, entry.title, chapter.scanlator, chapter.name)
         // Generate metadata
         comicInfo <- MetadataGeneration.generateMetadata(entry, chapter)
         done <- ZIO.succeed(downloaded) *> addComicInfo(entry.title, chapter.name, comicInfo)
@@ -51,21 +52,21 @@ object DownloadLibrary extends ZIOAppDefault :
       mediaType <- ZIO.succeed(contentType.mediaType).map(_.subType)
       mangaFolder <- destinationPath.map(_ / clean(entry.title))
       _ <- Files.createDirectories(mangaFolder).orDie
-      posterName <- ZIO.succeed(s"poster.$mediaType")
-      body <- ZIO.succeed(result.body.asStream)
-      posterSink <- ZIO.succeed(ZSink.fromFile((mangaFolder / posterName).toFile))
+      posterName = s"poster.$mediaType"
+      body = result.body.asStream
+      posterSink = ZSink.fromFile((mangaFolder / posterName).toFile)
       _ <- body.run(posterSink)
     } yield ()
 
   private def setUpMylarJson(entry: MangaEntry) =
     for {
       metadata <- Metadata(entry)
-      mylarJson <- ZIO.succeed(MylarJson(metadata = metadata))
-      jsonContent <- ZIO.succeed(mylarJson.toJsonPretty)
+      mylarJson = MylarJson(metadata = metadata)
+      jsonContent = mylarJson.toJsonPretty
       mangaFolder <- destinationPath.map(_ / clean(entry.title))
       _ <- Files.createDirectories(mangaFolder).orDie
-      mylarJsonFile <- ZIO.succeed(mangaFolder / "series.json")
-      _ <- ZIO.succeed(mylarJsonFile.toFile.createNewFile())
+      mylarJsonFile = mangaFolder / "series.json"
+      _ = mylarJsonFile.toFile.createNewFile()
       _ <- Files.writeLines(mylarJsonFile, jsonContent :: Nil)
     } yield ()
 

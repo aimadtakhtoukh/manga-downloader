@@ -10,7 +10,8 @@ case class Chapter(
                     pageCount: Int,
                     chapterCount: Int,
                     index: Int,
-                    downloaded: Boolean
+                    downloaded: Boolean,
+                    scanlator: Option[String]
                   )
 
 object Chapter {

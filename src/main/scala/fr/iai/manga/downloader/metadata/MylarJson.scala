@@ -33,6 +33,8 @@ object Metadata {
     status match {
       case "ONGOING" => "Continuing"
       case "FINISHED" => "Ended"
+      case "COMPLETED" => "Ended"
+      case _ => "Continuing"
     }
 
   def apply(mangaEntry: MangaEntry): ZIO[Any, Throwable, Metadata] =
