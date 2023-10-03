@@ -33,7 +33,7 @@ object TachideskApi:
    def updateChapterList(id: Long): ZIO[Client, Throwable, Unit] =
       for {
          api <- apiUrl
-         _ <- Client.request(s"$api/manga/$id/?onlineFetch=false")
+         _ <- Client.request(s"$api/manga/$id/?onlineFetch=true")
       } yield ()
 
    def isDownloaded(mangaId: Long, chapterId: Long): ZIO[Client, Throwable, Boolean] =
