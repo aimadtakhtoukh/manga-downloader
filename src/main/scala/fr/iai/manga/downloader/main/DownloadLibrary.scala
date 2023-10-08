@@ -41,7 +41,7 @@ object DownloadLibrary extends ZIOAppDefault :
         done <- ZIO.succeed(downloaded) *> addComicInfo(entry.title, chapter.name, comicInfo)
         _ <- ZIO.succeed(done) *> Console.printLine(s"${entry.title}, chp ${chapter.chapterNumber} ended")
       } yield ()
-    ).orElseSucceed(())
+    ).catchAll(t => ZIO.succeed(t.printStackTrace()) *> ZIO.succeed(()))
 
   private def downloadPoster(entry: MangaEntry) =
     for {
