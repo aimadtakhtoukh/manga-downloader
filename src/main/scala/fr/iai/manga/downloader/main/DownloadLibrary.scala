@@ -31,9 +31,9 @@ object DownloadLibrary extends ZIOAppDefault :
           }
         // Trigger download
         api <- apiUrl
-        downloadUrl = s"$api/download/${entry.id}/chapter/${chapter.index}"
-        _ <- Client.request(downloadUrl)
         downloaded <- ifDownloaded(entry, chapter)
+        downloadUrl = s"$api/download/${entry.id}/chapter/${chapter.index}"
+        _ <- ZIO.when(!downloaded)(Client.request(downloadUrl))
         // Zip manga
         source <- TachideskApi.source(entry.sourceId)
         _ <- ZIO.succeed(downloaded) *> zipManga(source.displayName, entry.title, chapter.scanlator, chapter.name)
