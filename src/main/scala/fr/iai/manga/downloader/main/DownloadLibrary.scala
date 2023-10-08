@@ -23,8 +23,7 @@ object DownloadLibrary extends ZIOAppDefault :
         chapterExists <- chapterAlreadyDownloaded(entry.title, chapter.name)
         _ <-
           if (chapterExists) {
-            Console.printLine(s"${entry.title}, chp ${chapter.chapterNumber} already downloaded") *>
-              ZIO.fail(new IllegalStateException("Chapter already exists"))
+            ZIO.fail(new IllegalStateException("Chapter already exists"))
           } else {
             Console.printLine(s"${entry.title}, chp ${chapter.chapterNumber} started") *>
               ZIO.succeed(())
