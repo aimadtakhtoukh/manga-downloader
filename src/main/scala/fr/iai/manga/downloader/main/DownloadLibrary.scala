@@ -32,6 +32,7 @@ object DownloadLibrary extends ZIOAppDefault :
         api <- apiUrl
         downloaded <- ifDownloaded(entry, chapter)
         downloadUrl = s"$api/download/${entry.id}/chapter/${chapter.index}"
+        _ <- Console.printLine(downloadUrl)
         _ <- ZIO.when(!downloaded)(Client.request(downloadUrl))
         // Zip manga
         source <- TachideskApi.source(entry.sourceId)
@@ -41,7 +42,7 @@ object DownloadLibrary extends ZIOAppDefault :
         done <- ZIO.succeed(downloaded) *> addComicInfo(entry.title, chapter.name, comicInfo)
         _ <- ZIO.succeed(done) *> Console.printLine(s"${entry.title}, chp ${chapter.chapterNumber} ended")
       } yield ()
-    ).catchAll(t => ZIO.succeed(t.printStackTrace()) *> ZIO.succeed(()))
+    ).orElseSucceed(())
 
   private def downloadPoster(entry: MangaEntry) =
     for {
