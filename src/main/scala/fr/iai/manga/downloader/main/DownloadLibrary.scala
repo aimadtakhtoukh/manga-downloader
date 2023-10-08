@@ -13,8 +13,7 @@ import zio.stream.ZSink
 
 object DownloadLibrary extends ZIOAppDefault :
   private def ifDownloaded(mangaEntry: MangaEntry, chapter: Chapter): ZIO[Client, Throwable, Boolean] =
-    (isDownloaded(mangaEntry.id, chapter.index).tapError(t => ZIO.succeed(t.printStackTrace()))
-      repeat (Schedule.spaced(1.second) && Schedule.recurUntilEquals(true)))
+    isDownloaded(mangaEntry.id, chapter.index) repeat (Schedule.spaced(1.second) && Schedule.recurUntilEquals(true))
       .map { case (_, downloaded) => downloaded }
 
   private def handleChapter(entry: MangaEntry, chapter: Chapter): URIO[Client, Unit] =
@@ -31,9 +30,9 @@ object DownloadLibrary extends ZIOAppDefault :
           }
         // Trigger download
         api <- apiUrl
-        downloaded <- ifDownloaded(entry, chapter)
         downloadUrl = s"$api/download/${entry.id}/chapter/${chapter.index}"
-        _ <- ZIO.when(!downloaded)(Client.request(downloadUrl))
+        _ <- Client.request(downloadUrl)
+        downloaded <- ifDownloaded(entry, chapter)
         // Zip manga
         source <- TachideskApi.source(entry.sourceId)
         _ <- ZIO.succeed(downloaded) *> zipManga(source.displayName, entry.title, chapter.scanlator, chapter.name)
