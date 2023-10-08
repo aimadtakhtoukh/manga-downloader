@@ -30,7 +30,9 @@ object DownloadLibrary extends ZIOAppDefault :
           }
         // Trigger download
         api <- apiUrl
+        _ <- Console.printLine(api)
         downloaded <- ifDownloaded(entry, chapter)
+        _ <- Console.printLine(downloaded)
         downloadUrl = s"$api/download/${entry.id}/chapter/${chapter.index}"
         _ <- Console.printLine(s"$manga $chapter $downloaded $downloadUrl")
         _ <- ZIO.when(!downloaded)(Client.request(downloadUrl))
