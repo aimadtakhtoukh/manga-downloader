@@ -77,18 +77,21 @@ object DownloadLibrary extends ZIOAppDefault :
       // Thumbnail
       _ <- downloadPoster(entry)
       // Update chapter list
-      updateDone <- TachideskApi.updateChapterList(entry.id)
+//      updateDone <- TachideskApi.updateChapterList(entry.id)
       // Download chapters if not already downloaded
-      chapterList <- ZIO.succeed(updateDone) *> TachideskApi.chapterList(entry.id)
+      chapterList <- /*ZIO.succeed(updateDone) *> */ TachideskApi.chapterList(entry.id)
       done <- ZIO.foreachParDiscard(chapterList)(chapter => handleChapter(entry, chapter))
       _ <- ZIO.succeed(done) *> Console.printLine(s"${entry.title} ended")
     } yield ()
 
-  private val program: ZIO[Client, Throwable, Unit] = for {
-    mangaList <- TachideskApi.mangaList()
-    _ <- ZIO.foreachParDiscard(mangaList)(handleManga).repeat(Schedule.spaced(2.hours))
-  } yield ()
+  private def setup(): ZIO[Client, Throwable, Unit] =
+    for {
+      updateDone <- TachideskApi.update() *> ZIO.sleep(10.seconds)
+      mangaList <- ZIO.succeed(updateDone) *> TachideskApi.mangaList()
+      _ <- ZIO.foreachParDiscard(mangaList)(handleManga)
+    } yield ()
+
+  private val program: ZIO[Client, Throwable, Long] = setup().repeat(Schedule.spaced(2.hours))
 
   override val run: ZIO[Any, Throwable, Unit] =
-    program.provide(Client.default)
-      .forever
+    program.provide(Client.default).forever

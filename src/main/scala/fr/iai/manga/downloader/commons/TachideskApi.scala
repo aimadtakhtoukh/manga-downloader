@@ -51,3 +51,9 @@ object TachideskApi:
          sourceReqAsString <- sourceReq.body.asString(CharsetUtil.UTF_8)
          source <- ZIO.fromEither(sourceReqAsString.fromJson[Source]).mapError(errorMessage => IllegalStateException(errorMessage))
       } yield source
+
+   def update(): ZIO[Client, Throwable, Unit] =
+      for {
+         api <- apiUrl
+         _ <- Client.request(s"$api/update/fetch") *> Console.printLine("Update fired")
+      } yield ()
