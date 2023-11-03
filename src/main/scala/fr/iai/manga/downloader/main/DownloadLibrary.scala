@@ -86,7 +86,7 @@ object DownloadLibrary extends ZIOAppDefault :
 
   private def setup(): ZIO[Client, Throwable, Unit] =
     for {
-      updateDone <- TachideskApi.update() *> ZIO.sleep(10.seconds)
+      updateDone <- TachideskApi.update() *> ZIO.sleep(30.seconds)
       mangaList <- ZIO.succeed(updateDone) *> TachideskApi.mangaList()
       _ <- ZIO.foreachParDiscard(mangaList)(handleManga)
     } yield ()

@@ -1,7 +1,7 @@
 package fr.iai.manga.downloader.commons
 
 import zio.*
-import zio.http.Client
+import zio.http.{Client, Method}
 import io.netty.util.CharsetUtil
 import zio.json.*
 
@@ -55,5 +55,5 @@ object TachideskApi:
    def update(): ZIO[Client, Throwable, Unit] =
       for {
          api <- apiUrl
-         _ <- Client.request(s"$api/update/fetch") *> Console.printLine("Update fired")
+         _ <- Client.request(s"$api/update/fetch", method = Method.POST) *> Console.printLine("Update fired")
       } yield ()
