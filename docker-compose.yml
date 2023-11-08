@@ -60,7 +60,6 @@ services:
     environment:
       - PUID=1000
       - PGID=1000
-      - KOMGA_LIBRARIES_SCAN_CRON=0 */15 * * * ?
     restart: unless-stopped
 
   downloader:

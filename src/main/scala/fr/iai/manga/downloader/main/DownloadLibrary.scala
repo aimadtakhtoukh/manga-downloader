@@ -71,7 +71,6 @@ object DownloadLibrary extends ZIOAppDefault :
 
   private def handleManga(entry: MangaEntry) =
     for {
-      _ <- Console.printLine(s"${entry.title} started")
       // Mylar json
       _ <- setUpMylarJson(entry)
       // Thumbnail
@@ -80,8 +79,7 @@ object DownloadLibrary extends ZIOAppDefault :
 //      updateDone <- TachideskApi.updateChapterList(entry.id)
       // Download chapters if not already downloaded
       chapterList <- /*ZIO.succeed(updateDone) *> */ TachideskApi.chapterList(entry.id)
-      done <- ZIO.foreachParDiscard(chapterList)(chapter => handleChapter(entry, chapter))
-      _ <- ZIO.succeed(done) *> Console.printLine(s"${entry.title} ended")
+      _ <- ZIO.foreachParDiscard(chapterList)(chapter => handleChapter(entry, chapter))
     } yield ()
 
   private def setup(): ZIO[Client, Throwable, Unit] =
@@ -89,6 +87,7 @@ object DownloadLibrary extends ZIOAppDefault :
       updateDone <- TachideskApi.update() *> ZIO.sleep(30.seconds)
       mangaList <- ZIO.succeed(updateDone) *> TachideskApi.mangaList()
       _ <- ZIO.foreachParDiscard(mangaList)(handleManga)
+//      _ <- ZIO.succeed(done) *> updateKomga()
     } yield ()
 
   private val program: ZIO[Client, Throwable, Long] = setup().repeat(Schedule.spaced(2.hours))

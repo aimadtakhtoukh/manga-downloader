@@ -9,7 +9,7 @@ object TachideskApi:
 
    def url: IO[Throwable, String] = System.env("TACHIDESK_URL").flatMap {
       case Some(url) => ZIO.succeed(url)
-      case None => ZIO.fail(new IllegalStateException("Undefined URL"))
+      case None => ZIO.fail(new IllegalStateException("Undefined Tachidesk URL"))
    }
 
    def apiUrl: IO[Throwable, String] = url.map(u => s"$u/api/v1")
@@ -33,7 +33,7 @@ object TachideskApi:
    def updateChapterList(id: Long): ZIO[Client, Throwable, Unit] =
       for {
          api <- apiUrl
-         _ <- Client.request(s"$api/manga/$id/?onlineFetch=true")
+         _ <- Client.request(s"$api/manga/$id/?onlineFetch=true", method = Method.POST)
       } yield ()
 
    def isDownloaded(mangaId: Long, chapterId: Long): ZIO[Client, Throwable, Boolean] =
