@@ -93,4 +93,6 @@ object DownloadLibrary extends ZIOAppDefault :
   private val program: ZIO[Client, Throwable, Long] = setup().repeat(Schedule.spaced(2.hours))
 
   override val run: ZIO[Any, Throwable, Unit] =
-    program.provide(Client.default).forever
+    program.provide(Client.default)
+      .repeat(Schedule.spaced(2.hours))
+      .forever
