@@ -1,4 +1,4 @@
-version : '3.8'
+version : '3.9'
 networks:
   web:
     name: web
@@ -46,11 +46,8 @@ services:
     ports:
       - "4567:4567"
     restart: unless-stopped
-    deploy:
-      resources:
-        limits:
-          cpus: 0.2
-          memory: 1G
+    mem_limit: 1G
+    cpus: 0.2
 
   komga:
     image: gotson/komga
