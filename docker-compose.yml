@@ -46,6 +46,11 @@ services:
     ports:
       - "4567:4567"
     restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: 0.2
+          memory: 1G
 
   komga:
     image: gotson/komga
