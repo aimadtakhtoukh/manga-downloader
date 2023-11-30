@@ -50,7 +50,7 @@ services:
     cpus: 0.2
 
   komga:
-    image: gotson/komga
+    image: gotson/komga:1.7.2
     container_name: komga
     networks:
       - web
