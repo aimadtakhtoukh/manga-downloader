@@ -10,7 +10,7 @@ object Zip extends ZIOAppDefault :
   val scanlator: Option[String] = None
   val chapter: String = "Chapter 104.5"
 
-  def clean(fileName: String): String = fileName.replaceAll("[:\"?]", "_").replaceAll("\\.*$", "")
+  def clean(fileName: String): String = fileName.replaceAll("[:\"?]", "_").replaceAll("\\.*$", "").take(240)
 
   def sourcePath: IO[Throwable, Path] = System.env("SOURCE_PATH").flatMap({
     case Some(path) => ZIO.succeed(Path(path))
