@@ -30,7 +30,7 @@ volumes:
 
 services:
   tachidesk:
-    image: ghcr.io/suwayomi/tachidesk
+    image: ghcr.io/suwayomi/tachidesk:v0.7.0-r1480
     container_name: tachidesk
     networks:
       - web
@@ -50,7 +50,7 @@ services:
     cpus: 0.2
 
   komga:
-    image: gotson/komga:1.7.2
+    image: gotson/komga
     container_name: komga
     networks:
       - web
