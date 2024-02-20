@@ -20,7 +20,7 @@ volumes:
       o: bind
 services:
   tachidesk:
-    image: ghcr.io/suwayomi/tachidesk
+    image: ghcr.io/suwayomi/tachidesk:v0.7.0-r1493
     container_name: tachidesk
     environment:
       - PUID=1000
@@ -44,14 +44,14 @@ services:
       - PUID=1000
       - PGID=1000
     restart: unless-stopped
-  downloader:
-    image: manga-downloader:0.1.0-SNAPSHOT
-    container_name: manga-downloader
-    volumes:
-      - mangas:/mangas
-      - tachidesk-config:/tachidesk
-    environment:
-      - "TACHIDESK_URL=http://tachidesk:4567"
-      - "SOURCE_PATH=/tachidesk/downloads"
-      - "DESTINATION_PATH=/mangas"
-    restart: unless-stopped
+#  downloader:
+#    image: manga-downloader:0.1.0-SNAPSHOT
+#    container_name: manga-downloader
+#    volumes:
+#      - mangas:/mangas
+#      - tachidesk-config:/tachidesk
+#    environment:
+#      - "TACHIDESK_URL=http://tachidesk:4567"
+#      - "SOURCE_PATH=/tachidesk/downloads"
+#      - "DESTINATION_PATH=/mangas"
+#    restart: unless-stopped

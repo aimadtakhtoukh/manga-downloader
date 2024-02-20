@@ -15,6 +15,5 @@ case class MangaEntry(
                        thumbnailUrl: String
                      )
 
-object MangaEntry {
+object MangaEntry:
   implicit val decoder: JsonDecoder[MangaEntry] = DeriveJsonDecoder.gen[MangaEntry]
-}

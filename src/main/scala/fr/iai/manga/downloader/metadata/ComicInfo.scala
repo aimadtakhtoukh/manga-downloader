@@ -15,7 +15,7 @@ case class ComicInfo(
                       manga: String
                     )
 
-object ComicInfo {
+object ComicInfo:
   def apply(mangaEntry: MangaEntry, chapter: Chapter) : ComicInfo = ComicInfo(
     title = chapter.name,
     series = mangaEntry.title,
@@ -28,4 +28,3 @@ object ComicInfo {
     tags = "",
     manga = "YesAndRightToLeft"
   )
-}

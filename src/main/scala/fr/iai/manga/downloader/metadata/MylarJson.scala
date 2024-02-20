@@ -7,9 +7,8 @@ import zio.json.{DeriveJsonEncoder, JsonEncoder}
 
 case class MylarJson(metadata: Metadata)
 
-object MylarJson {
+object MylarJson:
   implicit val encoder: JsonEncoder[MylarJson] = DeriveJsonEncoder.gen[MylarJson]
-}
 
 case class Metadata(
                      `type`: String,
@@ -26,7 +25,7 @@ case class Metadata(
                      publication_run : String
                    )
 
-object Metadata {
+object Metadata:
   implicit val encoder: JsonEncoder[Metadata] = DeriveJsonEncoder.gen[Metadata]
 
   private def mapStatus(status: String): String =
@@ -57,6 +56,3 @@ object Metadata {
         )
       )
     } yield metadata
-}
-
-

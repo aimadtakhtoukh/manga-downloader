@@ -14,6 +14,5 @@ case class Chapter(
                     scanlator: Option[String]
                   )
 
-object Chapter {
+object Chapter:
   implicit val decoder: JsonDecoder[Chapter] = DeriveJsonDecoder.gen[Chapter]
-}

@@ -30,7 +30,7 @@ volumes:
 
 services:
   tachidesk:
-    image: ghcr.io/suwayomi/tachidesk
+    image: ghcr.io/suwayomi/tachidesk:v0.7.0-r1493
     container_name: tachidesk
     networks:
       - web

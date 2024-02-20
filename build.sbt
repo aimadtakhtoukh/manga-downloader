@@ -1,5 +1,6 @@
 enablePlugins(JavaAppPackaging)
 enablePlugins(DockerPlugin)
+enablePlugins(CalibanPlugin)
 
 lazy val root = project
   .in(file("."))
@@ -13,6 +14,10 @@ lazy val root = project
       "org.slf4j" % "slf4j-nop" % "2.0.7",
       "dev.zio" %% "zio" % "2.0.16",
       "dev.zio" %% "zio-http" % "3.0.0-RC2",
+      "com.softwaremill.sttp.client3" %% "zio" % "3.9.3",
+
+      //GraphQL client
+      "com.github.ghostdogpr" %% "caliban-client" % "2.5.2",
 
       //Streams
       "dev.zio" %% "zio-streams" % "2.0.16",
@@ -29,7 +34,3 @@ lazy val root = project
   )
 
 dockerEntrypoint := Seq("/opt/docker/bin/download-library")
-dockerBaseImage := "mangal-java"
-Docker / daemonUserUid := None
-Docker / daemonUser := "root"
-Docker / daemonGroup := "root"
